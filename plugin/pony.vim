@@ -1,8 +1,10 @@
 " Vim plugin for working with Django projects.
+" original vim-pony made by
 " Author: Rainer Borene <me@rainerborene.com>
-" Licensed under the same terms as Vim.
-"
 " Maintainer: Jean-Marie Comets <jean.marie.comets@gmail.com>
+"
+" fork by @marojenka
+" Licensed under the same terms as Vim.
 
 if exists("g:loaded_pony")
   finish
@@ -13,6 +15,10 @@ let g:loaded_pony = 1
 if !exists('g:pony_manage_filename')
   let g:pony_manage_filename = findfile("manage.py", ".;")
 endif
+
+if !exists("g:pony_app_prefix")
+  let g:pony_app_prefix = '/'
+end
 
 " function to wrap the check on this file
 function! s:ManageExists()
@@ -32,6 +38,7 @@ let g:pony_python_cmd = "python"
 " Dictionary containing mapping from command to possible files
 let s:goto_complete_dict = {
       \ "admin"    : "admin.py",
+      \ "forms"    : "forms.py",
       \ "models"   : "models.py",
       \ "settings" : "settings.py",
       \ "tests"    : "tests.py",
@@ -78,7 +85,7 @@ endfunction
 function! s:DjangoGoto(app_label, name)
   " Build app directory
   if len(a:app_label) > 0
-    let l:real_app_label = a:app_label
+    let l:real_app_label = g:pony_app_prefix . a:app_label
     if !filereadable(l:real_app_label)
       let l:cmd = "ls -d " . l:real_app_label . "*"
       let l:app_label_candidates = split(system(l:cmd))
@@ -157,9 +164,9 @@ execute "command! -nargs=? -complete=customlist,s:DjangoManageComplete "
       \ . " :call s:DjangoManage('<args>')"
 " dictionary for configuration of the manage shortcuts
 let s:manage_shortcuts = {
-      \ "dbshell"   : "dbshell",
+      \ "migation"  : "makemigration",
+      \ "migrate"   : "migrate",
       \ "runserver" : "runserver",
-      \ "syncdb"    : "syncdb",
       \ "shell"     : "shell"
       \ }
 
